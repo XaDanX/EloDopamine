@@ -1,0 +1,165 @@
+extern crate core;
+
+use crate::{Memory};
+use crate::vector::Vec3;
+use crate::offsets::{OBJECT_ARMOR, OBJECT_ATTACK_DAMAGE, OBJECT_ATTACK_RANGE, OBJECT_BONUS_ATTACK_DAMAGE, OBJECT_CHAMPION_NAME, OBJECT_DEAD, OBJECT_DIRECTION, OBJECT_HEALTH, OBJECT_INDEX, OBJECT_INVULNERABLE, OBJECT_MAGIC_RESIST, OBJECT_MANA, OBJECT_MAX_HEALTH, OBJECT_MAX_MANA, OBJECT_MOVEMENT_SPEED, OBJECT_POSITION, OBJECT_TARGETABLE, OBJECT_TEAM, OBJECT_VISIBILITY};
+
+#[derive(Debug)]
+pub struct GameObject {
+    pub base_address: u32,
+    pub index: i32,
+    pub team: u32,
+    pub direction: Vec3,
+    pub position: Vec3,
+    pub dead: u32,
+    pub visibility: bool,
+    pub mana: f32,
+    pub max_mana: f32,
+    pub invulnearable: bool,
+    pub targetable: bool,
+    pub health: f32,
+    pub max_health: f32,
+    pub bonus_attack_damage: f32,
+    pub attack_damage: f32,
+    pub armor: f32,
+    pub bonus_armor: f32,
+    pub magic_resist: f32,
+    pub movement_speed: f32,
+    pub attack_range: f32,
+    pub champion_name: String
+}
+impl GameObject {
+    pub fn new(base_address: u32) -> GameObject {
+        return GameObject {
+            base_address,
+            index: 0,
+            team: 0,
+            direction: Vec3::new(0.0, 0.0, 0.0),
+            position: Vec3::new(0.0, 0.0, 0.0),
+            dead: 0,
+            visibility: false,
+            mana: 0.0,
+            max_mana: 0.0,
+            invulnearable: false,
+            targetable: false,
+            health: 0.0,
+            max_health: 0.0,
+            bonus_attack_damage: 0.0,
+            attack_damage: 0.0,
+            armor: 0.0,
+            bonus_armor: 0.0,
+            magic_resist: 0.0,
+            movement_speed: 0.0,
+            attack_range: 0.0,
+            champion_name: String::new()
+        };
+    }
+
+    pub fn update(&mut self, mut memory: Memory) {
+        self.index = memory.read::<i32>(self.base_address + OBJECT_INDEX);
+        self.team = memory.read::<u32>(self.base_address + OBJECT_TEAM);
+        self.direction = memory.read::<Vec3>(self.base_address + OBJECT_DIRECTION);
+        self.position = memory.read::<Vec3>(self.base_address + OBJECT_POSITION);
+        self.dead = memory.read::<u32>(self.base_address + OBJECT_DEAD);
+        self.visibility = memory.read::<bool>(self.base_address + OBJECT_VISIBILITY);
+        self.mana = memory.read::<f32>(self.base_address + OBJECT_MANA);
+        self.max_mana = memory.read::<f32>(self.base_address + OBJECT_MAX_MANA);
+        self.invulnearable = memory.read::<bool>(self.base_address + OBJECT_INVULNERABLE);
+        self.targetable = memory.read::<bool>(self.base_address + OBJECT_TARGETABLE);
+        self.health = memory.read::<f32>(self.base_address + OBJECT_HEALTH);
+        self.max_health = memory.read::<f32>(self.base_address + OBJECT_MAX_HEALTH);
+        self.bonus_attack_damage = memory.read::<f32>(self.base_address + OBJECT_BONUS_ATTACK_DAMAGE);
+        self.attack_damage = memory.read::<f32>(self.base_address + OBJECT_ATTACK_DAMAGE);
+        self.armor = memory.read::<f32>(self.base_address + OBJECT_ARMOR);
+        self.bonus_armor = memory.read::<f32>(self.base_address + OBJECT_BONUS_ATTACK_DAMAGE);
+        self.magic_resist = memory.read::<f32>(self.base_address + OBJECT_MAGIC_RESIST);
+        self.movement_speed = memory.read::<f32>(self.base_address + OBJECT_MOVEMENT_SPEED);
+        self.attack_range = memory.read::<f32>(self.base_address + OBJECT_ATTACK_RANGE);
+        if self.champion_name.len() == 0 {
+            self.champion_name.clear();
+            self.champion_name.push_str(memory.read_string(self.base_address + OBJECT_CHAMPION_NAME).as_str());
+        }
+
+    }
+}
+
+#[derive(Debug)]
+pub struct MinionObject {
+    pub base_address: u32,
+    pub index: i32,
+    pub team: u32,
+    pub position: Vec3,
+    pub visibility: bool,
+    pub targetable: bool,
+    pub health: f32,
+    pub max_health: f32,
+    pub movement_speed: f32,
+}
+impl MinionObject {
+    pub fn new(base_address: u32) -> MinionObject {
+        return MinionObject {
+            base_address,
+            index: 0,
+            team: 0,
+            position: Vec3::new(0.0, 0.0, 0.0),
+            visibility: false,
+            targetable: false,
+            health: 0.0,
+            max_health: 0.0,
+            movement_speed: 0.0,
+        };
+    }
+
+    pub fn update(&mut self, mut memory: Memory) {
+        self.index = memory.read::<i32>(self.base_address + OBJECT_INDEX);
+        self.team = memory.read::<u32>(self.base_address + OBJECT_TEAM);
+        self.position = memory.read::<Vec3>(self.base_address + OBJECT_POSITION);
+        self.visibility = memory.read::<bool>(self.base_address + OBJECT_VISIBILITY);
+        self.targetable = memory.read::<bool>(self.base_address + OBJECT_TARGETABLE);
+        self.health = memory.read::<f32>(self.base_address + OBJECT_HEALTH);
+        self.max_health = memory.read::<f32>(self.base_address + OBJECT_MAX_HEALTH);
+        self.movement_speed = memory.read::<f32>(self.base_address + OBJECT_MOVEMENT_SPEED);
+
+    }
+}
+
+#[derive(Debug)]
+pub struct TurretObject {
+    pub base_address: u32,
+    pub index: i32,
+    pub team: u32,
+    pub position: Vec3,
+    pub invulnearable: bool,
+    pub targetable: bool,
+    pub health: f32,
+    pub max_health: f32,
+    pub attack_range: f32,
+}
+impl TurretObject {
+    pub fn new(base_address: u32) -> TurretObject {
+        return TurretObject {
+            base_address,
+            index: 0,
+            team: 0,
+            position: Vec3::new(0.0, 0.0, 0.0),
+            invulnearable: false,
+            targetable: false,
+            health: 0.0,
+            max_health: 0.0,
+            attack_range: 0.0,
+        };
+    }
+
+    pub fn update(&mut self, mut memory: Memory) {
+        self.index = memory.read::<i32>(self.base_address + OBJECT_INDEX);
+        self.team = memory.read::<u32>(self.base_address + OBJECT_TEAM);
+        self.position = memory.read::<Vec3>(self.base_address + OBJECT_POSITION);
+        self.invulnearable = memory.read::<bool>(self.base_address + OBJECT_INVULNERABLE);
+        self.targetable = memory.read::<bool>(self.base_address + OBJECT_TARGETABLE);
+        self.health = memory.read::<f32>(self.base_address + OBJECT_HEALTH);
+        self.max_health = memory.read::<f32>(self.base_address + OBJECT_MAX_HEALTH);
+        self.attack_range = memory.read::<f32>(self.base_address + OBJECT_ATTACK_RANGE);
+
+    }
+}
+
