@@ -4,6 +4,12 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui-glium-renderer" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui-glow-renderer" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui-sdl2-support" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui-sys" />
+      <excludeFolder url="file://$MODULE_DIR$/imgui-winit-support" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

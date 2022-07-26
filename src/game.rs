@@ -5,14 +5,14 @@ use crate::offsets::{GAME_WINDOW_HEIGHT, GAME_WINDOW_WIDTH, RENDERER, VIEW_PROJ_
 pub struct Game {
     pub time: f32,
     pub view_proj_matrix: Vec<f32>,
-    pub width: f32,
-    pub height: f32,
+    pub width: i32,
+    pub height: i32,
     renderer: u32
 }
 
 impl Game {
     pub fn new() -> Game {
-        return Game{ time: 0.0, view_proj_matrix: vec![0.0; 16], width: 0.0, height: 0.0, renderer: 0 };
+        return Game{ time: 0.0, view_proj_matrix: vec![0.0; 16], width: 0, height: 0, renderer: 0 };
     }
 
     pub fn update(&mut self, mut memory: Memory) {
@@ -34,8 +34,8 @@ impl Game {
         if self.renderer == 0 {
             self.renderer = memory.read::<u32>(memory.base_address + RENDERER);
         }
-        self.width = memory.read::<f32>(self.renderer + GAME_WINDOW_WIDTH);
-        self.height = memory.read::<f32>(self.renderer + GAME_WINDOW_HEIGHT);
+        self.width = memory.read::<i32>(self.renderer + GAME_WINDOW_WIDTH);
+        self.height = memory.read::<i32>(self.renderer + GAME_WINDOW_HEIGHT);
 
 
     }

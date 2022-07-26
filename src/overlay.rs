@@ -1,5 +1,4 @@
 
-
 use glium::glutin;
 use glium::glutin::event::{Event, WindowEvent};
 use glium::glutin::event_loop::{ControlFlow, EventLoop};
@@ -13,10 +12,11 @@ use std::time::Instant;
 use glium::glutin::platform::windows::{EventLoopExtWindows, WindowExtWindows};
 use winapi::shared::windef::HWND;
 use winapi::um::dwmapi::DwmExtendFrameIntoClientArea;
-use winapi::um::winuser::{GetWindowRect, GWL_EXSTYLE, MoveWindow, SetActiveWindow, SetFocus, SetWindowLongA, WS_EX_LAYERED, WS_EX_NOACTIVATE, WS_EX_TRANSPARENT};
+use winapi::um::winuser::{GetWindowRect, GWL_EXSTYLE, MoveWindow, SetActiveWindow, SetFocus, SetWindowLongA, WS_EX_LAYERED, WS_EX_NOACTIVATE, WS_EX_TOPMOST, WS_EX_TRANSPARENT};
 use crate::memory::get_hwnd;
 use winapi::um::uxtheme::MARGINS;
-
+use user32::{GetAsyncKeyState, GetWindowLongA};
+use winapi::um::winnt::LONG;
 
 pub struct System {
     pub event_loop: EventLoop<()>,
@@ -28,6 +28,7 @@ pub struct System {
     pub hwnd: HWND
 }
 
+pub static mut SHOW_MENU: bool = false;
 
 pub fn init(title: &str, width: f32, height: f32) -> System {
     let title = match Path::new(&title).file_name() {
@@ -98,13 +99,8 @@ pub fn init(title: &str, width: f32, height: f32) -> System {
         let width = rect.right - rect.left;
         let height = rect.bottom - rect.top;
 
-
-        // Stupid but working fix for fps lock moving window by 1 pixel right then back
         MoveWindow(hwnd, rect.left + 1, rect.top + 1, width - 1, height - 1, 1);
-        //MoveWindow(get_hwnd("League of Legends (TM) Client"),rect.left, rect.top, nwidth, height+1, 0);
-        //MoveWindow(get_hwnd("League of Legends (TM) Client"),rect.left, rect.top, width, height-1, 0);
-        //MoveWindow(get_hwnd("League of Legends (TM) Client"),rect.left - 1, rect.top - 1, width + 1, height + 1, 0);
-        //MoveWindow(get_hwnd("League of Legends (TM) Client"),rect.left - 1, rect.top - 1, width + 1, height + 1, 1);
+
 
     }
 
@@ -136,7 +132,6 @@ pub fn init(title: &str, width: f32, height: f32) -> System {
         renderer,
         font_size,
         hwnd
-
     }
 }
 
@@ -152,6 +147,9 @@ impl System {
         } = self;
         let mut last_frame = Instant::now();
 
+        //let mut style = imgui.style_mut();
+        //style.colors["TitleBg"] = [1.0, 0.0, 0.0, 1.0];
+
 
         event_loop.run(move |event, _, control_flow| match event {
             Event::NewEvents(_) => unsafe {
@@ -160,6 +158,7 @@ impl System {
                 last_frame = now;
                 SetActiveWindow(get_hwnd("League of Legends (TM) Client"));
                 SetFocus(get_hwnd("League of Legends (TM) Client"));
+
             }
             Event::MainEventsCleared => {
                 let gl_window = display.gl_window();
@@ -178,9 +177,29 @@ impl System {
                 }
 
                 let gl_window = display.gl_window();
-                let mut target = display.draw();
+                let mut target = display.draw();//nibba
                 target.clear_color_srgb(0.0, 0.0, 0.0, 0.0);
 
+                unsafe {
+                    let key_state = GetAsyncKeyState(0xA1) & 0x0001;
+
+                    if key_state > 0 {
+                        let win_log = GetWindowLongA(self.hwnd as _, GWL_EXSTYLE);
+
+                        if !SHOW_MENU {
+                            if win_log != (WS_EX_LAYERED | WS_EX_TOPMOST) as LONG {
+                                SetWindowLongA(self.hwnd, GWL_EXSTYLE, (WS_EX_LAYERED | WS_EX_LAYERED) as LONG);
+                            }
+                        }
+                        if SHOW_MENU {
+                            if win_log != (WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT) as LONG {
+                                SetWindowLongA(self.hwnd, GWL_EXSTYLE, (WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT) as LONG);
+                            }
+                        }
+                        SHOW_MENU= !SHOW_MENU;
+
+                    }
+                }
 
                 platform.prepare_render(ui, gl_window.window());
                 let draw_data = imgui.render();

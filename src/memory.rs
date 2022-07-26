@@ -21,6 +21,7 @@ use std::{
     ptr::null_mut as nullptr,
     ffi::CString
 };
+use std::os::raw::c_longlong;
 use std::os::windows::raw::HANDLE;
 use winapi::shared::minwindef::LPVOID;
 use winapi::shared::windef::HWND;
@@ -48,6 +49,36 @@ impl Memory {
     }
 
     pub fn read<T: Default>(&mut self, address: u32) -> T {
+        let mut ret: T = Default::default();
+
+        unsafe {
+            ReadProcessMemory(
+                self.handle as _,
+                address as *const c_void,
+                &mut ret as *mut T as *mut c_void,
+                std::mem::size_of::<T>(),
+                nullptr()
+            );}
+
+        return ret;
+    }
+
+    pub fn read_t<T: Default>(&mut self, address: DWORD) -> T {
+        let mut ret: T = Default::default();
+
+        unsafe {
+            ReadProcessMemory(
+                self.handle as _,
+                address as *const c_void,
+                &mut ret as *mut T as *mut c_void,
+                std::mem::size_of::<T>(),
+                nullptr()
+            );}
+
+        return ret;
+    }
+
+    pub fn read_i<T: Default>(&mut self, address: i32) -> T {
         let mut ret: T = Default::default();
 
         unsafe {

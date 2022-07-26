@@ -29,6 +29,7 @@ pub const OBJECT_MAGIC_RESIST: u32 = 0x137C; // Dumper could not find this offse
 pub const OBJECT_MOVEMENT_SPEED: u32 = 0x138C; // Dumper could not find this offset.
 pub const OBJECT_ATTACK_RANGE: u32 = 0x1394; // Dumper could not find this offset.
 pub const OBJECT_CHAMPION_NAME: u32 = 0x2BA4; // Dumper could not find this offset.
+pub const OBJECT_HEALTH_BAR_POS: u32 = 0x00E4; // Dumper could not find this offset.
 pub const HERO_INTERFACE: u32 = 0x1870c68;
 pub const MINION_INTERFACE: u32 = 0x24bfab4;
 pub const TURRET_INTERFACE: u32 = 0x3105acc;
@@ -36,3 +37,9 @@ pub const MISSILE_INTERFACE: u32 = 0x24bfa60;
 pub const GAME_WINDOW_WIDTH: u32 = 12;
 pub const GAME_WINDOW_HEIGHT: u32 = 16;
 pub const GAME_VERSION: u32 = 0x1510f04;
+
+// AI MANAGER
+pub const AI_MANAGER: i32 = 0x2C7C; // must be i32
+pub const AI_MANAGER_START_PATH: u32 = 0x1CC;
+pub const AI_MANAGER_END_PATH: u32 = 0x1D8;
+pub const AI_MANAGER_IS_MOVING: u32 = 0x1C0;

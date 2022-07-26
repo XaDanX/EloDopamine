@@ -1,5 +1,5 @@
 extern crate core;
-use crate::{Game, GameObject, HERO_INTERFACE, Memory};
+use crate::{Game, GameObject, HERO_INTERFACE, Memory, UnitData};
 use crate::game_object::{MinionObject, TurretObject};
 use crate::offsets::{LOCAL_PLAYER, MINION_INTERFACE, TURRET_INTERFACE};
 
@@ -10,6 +10,9 @@ pub struct GameManager {
     pub minion_list: Vec<MinionObject>,
     pub turret_list: Vec<TurretObject>,
     pub game: Game,
+    pub enemy_minion_list: Vec<MinionObject>,
+    pub ally_minion_list: Vec<MinionObject>,
+    pub unit_data: UnitData
 }
 
 impl GameManager {
@@ -20,8 +23,11 @@ impl GameManager {
             local_player: GameObject::new(0),
             hero_list: Vec::<GameObject>::new(),
             minion_list: Vec::<MinionObject>::new(),
+            enemy_minion_list: Vec::<MinionObject>::new(),
+            ally_minion_list: Vec::<MinionObject>::new(),
             turret_list: Vec::<TurretObject>::new(),
-            game: Game::new()
+            game: Game::new(),
+            unit_data: UnitData::new()
         };
         new_structure.reread();
         new_structure.update();
@@ -46,11 +52,19 @@ impl GameManager {
         */
         let minion_pointer_list = self.memory.read_template(MINION_INTERFACE);
         self.minion_list.clear();
-
+        self.enemy_minion_list.clear();
+        self.ally_minion_list.clear();
         for minion in minion_pointer_list {
             let mut current_minion = MinionObject::new(minion);
             current_minion.update(self.memory);
-            if current_minion.team == 100 || current_minion.team == 200 && current_minion.movement_speed > 5.0 {
+            if current_minion.team == 100 || current_minion.team == 200 && current_minion.movement_speed > 150.0 {
+                let mut tmp_obj = MinionObject::new(minion);
+                tmp_obj.update(self.memory);
+                if current_minion.team == self.local_player.team {
+                    self.ally_minion_list.push(tmp_obj);
+                } else {
+                    self.enemy_minion_list.push(tmp_obj)
+                }
                 self.minion_list.push(current_minion);
             }
         }
